@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useResumeStore } from '../store/useResumeStore';
 import axios from 'axios';
 
