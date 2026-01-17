@@ -71,7 +71,7 @@ const Editor = () => {
             value={resume.summary} 
             onChange={(e) => updateSummary(e.target.value)} 
           />
-          <p className="text-[9px] text-slate-500 italic ml-1 font-medium">Tip: Aapke PDF layout ke hisaab se 2-4 lines best dikhengi.</p>
+          <p className="text-[9px] text-slate-500 italic ml-1 font-medium">Tip: According to your PDF layout, 2-4 lines will look best.</p>
         </div>
       </section>
           
