@@ -1,6 +1,6 @@
 import { useResumeStore } from '../store/useResumeStore';
 import { PlusCircle, Trash2, Sparkles, Loader2 } from 'lucide-react';
-import { rewriteExperience } from '../services/api';
+import { rewriteExperience } from '../services/Api';
 import { useState } from 'react';
 
 export const ExperienceEditor = () => {
