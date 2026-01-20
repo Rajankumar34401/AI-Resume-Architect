@@ -85,7 +85,6 @@ AI-Resume-Architect/
 | **Tools**    | Postman, VS Code, Git |
 
 ---
-```text
 ## 🚀 How to Run
 
 ### 🖥️ Frontend Setup
@@ -102,12 +101,12 @@ npm run dev
 
 To run the backend server:
 
-```bash
 cd backend
 npm install
 npm run dev
 ---
-```text
+```
+
 ## Summary
 * **Dual-Architecture Setup**: The project is divided into two dedicated `src` directories (Backend and Frontend) for clean code separation and better scalability [cite: 2025-12-29].
 * **Modern UI Engine**: Built a premium Glassmorphism-based interface and dashboard using **Tailwind CSS v4** and React [cite: 2025-12-29].
