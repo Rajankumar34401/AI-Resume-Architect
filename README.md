@@ -98,8 +98,6 @@ npm run dev
 
 **An AI-powered professional resume builder with real-time preview and ATS optimization.**
 
----
-
 ### ⚙️ Backend Setup
 
 To run the backend server:
@@ -136,4 +134,5 @@ npm run dev
 The successful completion of Phase 1 and 2 has established a robust foundation for the **AI-Resume-Architect**. By implementing a decoupled dual-source architecture [cite: 2025-12-29] and integrating modern styling with Tailwind CSS v4, we have ensured that the application is both scalable and high-performing. 
 
 As a team, we have overcome significant technical hurdles—ranging from TypeScript configuration conflicts to Vite-plugin synchronization—demonstrating strong technical leadership and collaborative problem-solving. This initial phase sets the stage for the upcoming integration of AI-driven content optimization and automated PDF generation, bringing us one step closer to delivering a professional, ATS-ready resume building experience.
+---
 
