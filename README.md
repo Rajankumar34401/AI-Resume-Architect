@@ -3,7 +3,6 @@
 **An AI-powered professional resume builder with real-time preview and ATS optimization.**
 
 ---
-
 ## 📌 Overview
 
 AI-Resume-Architect is a full-stack application designed to help users craft professional resumes with dynamic previews and AI-driven ATS scoring.  
