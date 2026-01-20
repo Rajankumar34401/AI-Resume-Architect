@@ -85,6 +85,7 @@ AI-Resume-Architect/
 | **Tools**    | Postman, VS Code, Git |
 
 ---
+```text
 ## 🚀 How to Run
 
 ### 🖥️ Frontend Setup
