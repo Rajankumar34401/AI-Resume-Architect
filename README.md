@@ -128,6 +128,13 @@ npm run dev
 * **Limited AI Suggestions**: The AI optimization engine is currently in the testing phase and does not yet support multi-language resume analysis.
 * **Single Template Support**: The UI is currently locked to one professional Glassmorphism template; multi-template selection is part of the future roadmap.
 ---
+---
+## 🗺️ Roadmap
+
+- [x] **Phase 1**: Dual-source architecture setup & Tailwind v4 integration.
+- [x] **Phase 2**: Core Editor components & Zustand state management.
+- [ ] **Phase 3**: Gemini AI integration for ATS optimization & Puppeteer PDF export.
+- [ ] **Phase 4**: Database persistence & User authentication.
 ## 🏁 Conclusion
 
 The successful completion of Phase 1 and 2 has established a robust foundation for the **AI-Resume-Architect**. By implementing a decoupled dual-source architecture [cite: 2025-12-29] and integrating modern styling with Tailwind CSS v4, we have ensured that the application is both scalable and high-performing. 
