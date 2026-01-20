@@ -85,7 +85,6 @@ AI-Resume-Architect/
 | **Tools**    | Postman, VS Code, Git |
 
 ---
-
 ## 🚀 How to Run
 
 ### 🖥️ Frontend Setup
@@ -114,13 +113,12 @@ npm run dev
 * **Technical Stability**: Fixed TypeScript global configurations and Vite-Tailwind v4 integration bugs to ensure a stable development environment [cite: 2025-12-29].
 * **Full-Stack Readiness**: The Node.js/Express server is fully operational with `tsx` integration, ready to handle API requests from frontend components [cite: 2025-12-29].
 
----
 ## Challenges & Solutions (Leadership Insights)
 * **Architectural Management**: Coordinating between two separate `src` directories required a modular structure with independent configurations to prevent path conflicts.
 * **Styling Integration**: Overcame Tailwind CSS v4 sync issues by manually configuring the Vite plugin and overriding VS Code CSS linting for a stable design system.
 * **Type Resolution**: Resolved TypeScript global `node` type conflicts by optimizing `tsconfig.node.json` and explicit type installation.
 * **Development Efficiency**: Integrated `tsx` to allow direct TypeScript execution in the backend, significantly reducing the reload time during development.
----
+
 ## ⚠️ Current Limitations (Phase 1 & 2)
 
 * **Local Environment Only**: The dual-source architecture (Backend & Frontend) is currently optimized for local development and lacks a production-ready Docker configuration [cite: 2025-12-29].
