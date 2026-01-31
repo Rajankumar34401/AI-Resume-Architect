@@ -26,4 +26,57 @@ Text to rewrite: ${text}`;
   }
 });
 
+router.post('/ats-score', async (req, res) => {
+  try {
+    const { resumeData, jobDescription } = req.body;
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); // Using 1.5-flash for speed/cost
+
+    const prompt = `
+  You are an expert ATS Analyst. Compare the following Resume Data with the Job Description.
+  
+  Resume Data: ${JSON.stringify(resumeData)}
+  Job Description: ${jobDescription}
+
+  INSTRUCTIONS:
+  1. Calculate a match score (0-100).
+  2. Identify the top 5-8 missing "Hard Skills" or "Tools" from the JD that are not in the resume.
+  3. Ignore generic words; focus on industry-specific keywords (e.g., "GraphQL", "Agile", "AWS").
+  
+  Return ONLY a JSON object:
+  {
+    "score": number,
+    "feedback": "Concise, professional advice",
+    "missingKeywords": ["Skill1", "Skill2", "Skill3"]
+  }
+`;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text().replace(/```json|```/g, "").trim();
+    
+    res.json(JSON.parse(text));
+  } catch (error) {
+    console.error("ATS Error:", error);
+    res.status(500).json({ error: "ATS Analysis failed" });
+  }
+});
+
+router.post('/generate-cover-letter', async (req, res) => {
+  try {
+    const { resumeData, jobDescription } = req.body;
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+    const prompt = `Write a professional cover letter based on this Resume: ${JSON.stringify(resumeData)} 
+    and this Job Description: ${jobDescription}. 
+    Keep it under 300 words and focus on matching skills to requirements. 
+    Use a professional tone and do not use generic placeholders.`;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    res.json({ coverLetter: response.text().trim() });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to generate cover letter" });
+  }
+});
+
 export default router;
