@@ -24,4 +24,7 @@ router.delete('/:id', deleteResume);
 // POST: Generate and download PDF via Puppeteer
 router.post('/download', downloadPdf);
 
+// This allows the dashboard to call /api/resumes/download/SOME_ID
+router.get('/download/:id', downloadPdf);
+
 export default router;
