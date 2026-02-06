@@ -1,10 +1,14 @@
 import express from 'express';
-import { signup, login } from '../controllers/authController.js';
+import { register, login, getCurrentUser } from '../controllers/authController.js';
+import { authenticateUser } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// These match the frontend calls
-router.post('/signup', signup);
+// Public routes
+router.post('/register', register);
 router.post('/login', login);
+
+// Protected routes
+router.get('/me', authenticateUser, getCurrentUser);
 
 export default router;

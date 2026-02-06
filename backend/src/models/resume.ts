@@ -1,47 +1,59 @@
 import mongoose, { Schema, Document } from 'mongoose';
+import type { ResumeData } from '../types/index.js';
 
-const ResumeSchema: Schema = new Schema({
-  // Link this resume to a specific user
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  
-  personalInfo: {
-    fullName: { type: String, default: '' },
-    role: { type: String, default: '' },
-    email: { type: String, default: '' },
-    phone: { type: String, default: '' },
-    linkedin: { type: String, default: '' },
-    github: { type: String, default: '' },
-    city: { type: String, default: '' }
+export interface IResumeDocument extends Document {
+  userId: mongoose.Types.ObjectId;
+  resumeData: ResumeData;
+  jobDescription?: string;
+  atsScore?: number;
+  extractedKeywords?: string[];
+  template: string;
+  colorScheme: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const resumeSchema = new Schema<IResumeDocument>(
+  {
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+      index: true,
+    },
+    resumeData: {
+      type: Schema.Types.Mixed,
+      required: true,
+    },
+    jobDescription: {
+      type: String,
+    },
+    atsScore: {
+      type: Number,
+      min: 0,
+      max: 100,
+    },
+    extractedKeywords: [{
+      type: String,
+    }],
+    template: {
+      type: String,
+      default: 'classic',
+      enum: ['modern', 'classic', 'minimal', 'professional'],
+    },
+    colorScheme: {
+      type: String,
+      default: '#2563eb',
+    },
   },
-  summary: { type: String, default: '' },
-  experience: [{
-    id: String,
-    company: String,
-    role: String,
-    duration: String,
-    desc: String
-  }],
-  education: [{
-    id: String,
-    school: String,
-    degree: String,
-    year: String,
-    score: String,      
-    scoreType: { type: String, default: 'CGPA' } // New field added here
-  }],
-  skills: [String],
-  projects: [{
-    id: String,
-    name: String,
-    link: String,
-    desc: String
-  }],
-  certificates: [{
-    id: String,
-    name: String,
-    issuer: String,
-    date: String
-  }]
-}, { timestamps: true }); // Automatically adds createdAt and updatedAt
+  {
+    timestamps: true,
+  }
+);
 
-export default mongoose.model('Resume', ResumeSchema);
+// Indexes
+resumeSchema.index({ userId: 1, updatedAt: -1 });
+
+const Resume = mongoose.model<IResumeDocument>('Resume', resumeSchema);
+
+export default Resume;

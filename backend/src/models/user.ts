@@ -1,19 +1,61 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-export interface IUser extends Document {
+export interface IUserDocument extends Document {
+  name: string;
   email: string;
-  password?: string;
-  isPro: boolean;
+  password: string;
+  plan: 'free' | 'pro';
+  resumeCount: number;
   stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
   createdAt: Date;
+  updatedAt: Date;
 }
 
-const UserSchema: Schema = new Schema({
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true }, // In production, use bcrypt to hash this
-  isPro: { type: Boolean, default: false }, // Week 3 Stripe integration target
-  stripeCustomerId: { type: String },
-  createdAt: { type: Date, default: Date.now }
-});
+const userSchema = new Schema<IUserDocument>(
+  {
+    name: {
+      type: String,
+      required: [true, 'Name is required'],
+      trim: true,
+    },
+    email: {
+      type: String,
+      required: [true, 'Email is required'],
+      unique: true, // ✅ this already creates a unique index
+      lowercase: true,
+      trim: true,
+      match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email'],
+    },
+    password: {
+      type: String,
+      required: [true, 'Password is required'],
+      minlength: [6, 'Password must be at least 6 characters'],
+    },
+    plan: {
+      type: String,
+      enum: ['free', 'pro'],
+      default: 'free',
+    },
+    resumeCount: {
+      type: Number,
+      default: 0,
+    },
+    stripeCustomerId: {
+      type: String,
+    },
+    stripeSubscriptionId: {
+      type: String,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
-export default mongoose.model<IUser>('User', UserSchema);
+// ✅ REMOVE THIS
+// userSchema.index({ email: 1 });
+
+const User = mongoose.model<IUserDocument>('User', userSchema);
+
+export default User;

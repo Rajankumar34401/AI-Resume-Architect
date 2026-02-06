@@ -1,30 +1,41 @@
 import express from 'express';
-import { 
-  saveResume, 
-  getUserResumes, 
-  deleteResume 
+import {
+  saveResume,
+  getUserResumes,
+  deleteResume,
+  getResumeById,
 } from '../controllers/resumeController.js';
-import { downloadPdf } from '../controllers/pdfController.js'; // Your existing Puppeteer controller
+import { downloadPdf } from '../controllers/pdfController.js';
+import { authenticateUser } from '../middleware/auth.js';
+import aiRoutes from './aiRoutes.js';
 
 const router = express.Router();
 
-// --- MongoDB Persistence Routes (Week 4) ---
+// All routes require authentication
+router.use(authenticateUser);
 
-// POST: Save or Update a resume
+// ------------------
+// AI Routes
+// ------------------
+router.use('/ai', aiRoutes); // Already protected by authenticateUser
+
+// ------------------
+// Resume CRUD
+// ------------------
 router.post('/save', saveResume);
-
-// GET: Fetch all resumes for the user dashboard
 router.get('/list', getUserResumes);
-
-// DELETE: Remove a resume by ID
+router.get('/:id', getResumeById);
+router.put('/:id', saveResume);
 router.delete('/:id', deleteResume);
 
-// --- Existing PDF Route (Week 3) ---
+// ------------------
+// PDF Download
+// ------------------
 
-// POST: Generate and download PDF via Puppeteer
+// Download PDF by sending HTML (Preview)
 router.post('/download', downloadPdf);
 
-// This allows the dashboard to call /api/resumes/download/SOME_ID
+// Download PDF by resume ID
 router.get('/download/:id', downloadPdf);
 
 export default router;

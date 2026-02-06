@@ -2,19 +2,23 @@ import puppeteer from 'puppeteer';
 
 export const generatePDF = async (htmlContent: string) => {
   const browser = await puppeteer.launch({
-    headless: true, // "new" is also an option depending on version
-    args: ['--no-sandbox', '--disable-setuid-sandbox'] // Critical for many server environments
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
 
   const page = await browser.newPage();
   
-  // Set content and wait until the network is idle (fonts/styles loaded)
+  // High-density screen simulation helps with rendering quality
+  await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 2 });
+  
   await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
   
   const pdfBuffer = await page.pdf({
     format: 'A4',
     printBackground: true,
-    margin: { top: '10mm', right: '10mm', bottom: '10mm', left: '10mm' }
+    margin: { top: '0', right: '0', bottom: '0', left: '0' }, // Change to 0
+    preferCSSPageSize: true,
+    displayHeaderFooter: false
   });
 
   await browser.close();
