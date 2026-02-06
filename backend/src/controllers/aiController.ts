@@ -1,82 +1,143 @@
-import express from 'express';
+import type { Request, Response } from "express";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const router = express.Router();
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+const API_KEY = process.env.GEMINI_API_KEY;
 
-router.post('/optimize-summary', async (req, res) => {
+if (!API_KEY) {
+  throw new Error("GEMINI_API_KEY is missing in environment variables");
+}
+
+const genAI = new GoogleGenerativeAI(API_KEY);
+const MODEL_NAME = "gemini-2.5-flash";
+
+// ============================================
+// 1. Optimize Resume Summary
+// ============================================
+export const optimizeSummary = async (req: Request, res: Response) => {
   try {
     const { text } = req.body;
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-    
-   const prompt = `You are an expert resume writer. 
-Rewrite the following text to be professional and ATS-friendly.
-CRITICAL INSTRUCTIONS:
-- Provide ONLY the rewritten content.
-- Do NOT include any introductory text, options, explanations, or conversational filler.
-- Do NOT use conversational phrases like "Here are a few options".
-- Keep it under 50-60 words.
-Text to rewrite: ${text}`;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    res.json({ optimizedText: response.text() });
-  } catch (error) {
-    res.status(500).json({ error: "AI Optimization failed" });
-  }
-});
+    if (!text || typeof text !== "string") {
+      return res.status(400).json({ error: "Text is required" });
+    }
 
-router.post('/ats-score', async (req, res) => {
-  try {
-    const { resumeData, jobDescription } = req.body;
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); // Using 1.5-flash for speed/cost
+    const model = genAI.getGenerativeModel({ model: MODEL_NAME });
 
     const prompt = `
-  You are an expert ATS Analyst. Compare the following Resume Data with the Job Description.
-  
-  Resume Data: ${JSON.stringify(resumeData)}
-  Job Description: ${jobDescription}
+You are an expert resume writer.
 
-  INSTRUCTIONS:
-  1. Calculate a match score (0-100).
-  2. Identify the top 5-8 missing "Hard Skills" or "Tools" from the JD that are not in the resume.
-  3. Ignore generic words; focus on industry-specific keywords (e.g., "GraphQL", "Agile", "AWS").
-  
-  Return ONLY a JSON object:
-  {
-    "score": number,
-    "feedback": "Concise, professional advice",
-    "missingKeywords": ["Skill1", "Skill2", "Skill3"]
-  }
+Task:
+Rewrite the text below into a SINGLE professional, ATS-friendly resume summary.
+
+Rules:
+- Return ONLY one paragraph
+- No headings
+- No bullet points
+- No options
+- No explanations
+- No markdown
+- Maximum 60 words
+
+Text:
+${text}
 `;
 
     const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text().replace(/```json|```/g, "").trim();
-    
-    res.json(JSON.parse(text));
-  } catch (error) {
-    console.error("ATS Error:", error);
-    res.status(500).json({ error: "ATS Analysis failed" });
-  }
-});
+    const optimizedText = result.response.text().replace(/\n+/g, " ").trim();
 
-router.post('/generate-cover-letter', async (req, res) => {
+    return res.json({ optimizedText });
+
+  } catch (error) {
+    console.error("Optimize summary error:", error);
+    return res.status(500).json({ error: "Optimize failed" });
+  }
+};
+
+// ============================================
+// 2. ATS Score Analysis
+// ============================================
+export const atsScore = async (req: Request, res: Response) => {
   try {
     const { resumeData, jobDescription } = req.body;
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-    const prompt = `Write a professional cover letter based on this Resume: ${JSON.stringify(resumeData)} 
-    and this Job Description: ${jobDescription}. 
-    Keep it under 300 words and focus on matching skills to requirements. 
-    Use a professional tone and do not use generic placeholders.`;
+    if (!resumeData || !jobDescription) {
+      return res.status(400).json({
+        error: "resumeData and jobDescription are required",
+      });
+    }
+
+    const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+
+    const prompt = `
+Analyze the resume against the job description.
+
+Resume:
+${JSON.stringify(resumeData)}
+
+Job Description:
+${jobDescription}
+
+Return ONLY valid JSON in this format:
+{
+  "score": number,
+  "feedback": "string",
+  "missingKeywords": ["string"]
+}
+`;
 
     const result = await model.generateContent(prompt);
-    const response = await result.response;
-    res.json({ coverLetter: response.text().trim() });
-  } catch (error) {
-    res.status(500).json({ error: "Failed to generate cover letter" });
-  }
-});
+    const rawText = result.response.text();
 
-export default router;
+    // Remove markdown if AI adds it
+    const cleanJson = rawText.replace(/```json|```/g, "").trim();
+    const parsed = JSON.parse(cleanJson);
+
+    return res.json(parsed);
+
+  } catch (error) {
+    console.error("ATS score error:", error);
+    return res.status(500).json({ error: "ATS analysis failed" });
+  }
+};
+
+// ============================================
+// 3. Generate Cover Letter
+// ============================================
+export const generateCoverLetter = async (req: Request, res: Response) => {
+  try {
+    const { resumeData, jobDescription } = req.body;
+
+    if (!resumeData || !jobDescription) {
+      return res.status(400).json({
+        error: "resumeData and jobDescription are required",
+      });
+    }
+
+    const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+
+    const prompt = `
+Write a professional cover letter based on the resume and job description.
+
+Rules:
+- Maximum 300 words
+- Professional tone
+- No placeholders
+- No markdown
+
+Resume:
+${JSON.stringify(resumeData)}
+
+Job Description:
+${jobDescription}
+`;
+
+    const result = await model.generateContent(prompt);
+    const coverLetter = result.response.text().trim();
+
+    return res.json({ coverLetter });
+
+  } catch (error) {
+    console.error("Cover letter error:", error);
+    return res.status(500).json({ error: "Cover letter generation failed" });
+  }
+};
