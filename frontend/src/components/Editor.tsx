@@ -1,187 +1,136 @@
+import React from 'react';
 import { useResumeStore } from '../store/useResumeStore';
-import { 
-  User, Mail, Phone, MapPin, Github, Linkedin, 
-  Briefcase, GraduationCap, Folder, Zap, Sparkles, Plus, Trash2, Loader2 
-} from 'lucide-react';
+import { User, GraduationCap, Folder, Sparkles, Plus, Award, Code, Trash2, Loader2 } from 'lucide-react';
+import { ExperienceEditor } from './ExperienceEditor';
 
-const Editor = () => {
-  const { 
-    resume, updatePersonalInfo, updateSummary, addItem, updateItem, 
-    removeItem, updateSkills, optimizeContent, isLoading 
-  } = useResumeStore();
+const Editor: React.FC = () => {
+  const { resume, updatePersonalInfo, updateSummary, addItem, removeItem, updateItem, optimizeContent, isLoading } = useResumeStore();
 
   return (
     <div className="space-y-10 pb-20">
-      
-      {/* 1. PERSONAL DETAILS - Same as before */}
+      {/* 1. PERSONAL INFO */}
       <section className="glass-card p-6 border-l-4 border-l-emerald-500">
         <h2 className="text-[11px] font-black tracking-[0.2em] mb-6 flex items-center gap-2 text-emerald-400 uppercase">
           <User size={14} /> Identity & Contact
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div className="space-y-1">
-            <label className="text-[9px] font-bold text-slate-500 uppercase ml-1">Full Name</label>
-            <input placeholder="John Doe" value={resume.personalInfo.fullName} onChange={(e) => updatePersonalInfo({fullName: e.target.value})} className="neon-input" />
-          </div>
-          <div className="space-y-1">
-            <label className="text-[9px] font-bold text-slate-500 uppercase ml-1">Email</label>
-            <input placeholder="email@example.com" value={resume.personalInfo.email} onChange={(e) => updatePersonalInfo({email: e.target.value})} className="neon-input" />
-          </div>
-          <div className="space-y-1">
-            <label className="text-[9px] font-bold text-slate-500 uppercase ml-1">Phone</label>
-            <input placeholder="+91 90150XXXXX" value={resume.personalInfo.phone} onChange={(e) => updatePersonalInfo({phone: e.target.value})} className="neon-input" />
-          </div>
-          <div className="space-y-1">
-            <label className="text-[9px] font-bold text-slate-500 uppercase ml-1">Location</label>
-            <input placeholder="City, Country" value={resume.personalInfo.city} onChange={(e) => updatePersonalInfo({city: e.target.value})} className="neon-input" />
-          </div>
-          <div className="space-y-1">
-            <label className="text-[9px] font-bold text-slate-500 uppercase ml-1 flex items-center gap-1"><Linkedin size={10}/> LinkedIn URL</label>
-            <input placeholder="linkedin.com/in/username" value={resume.personalInfo.linkedin} onChange={(e) => updatePersonalInfo({linkedin: e.target.value})} className="neon-input" />
-          </div>
-          <div className="space-y-1">
-            <label className="text-[9px] font-bold text-slate-500 uppercase ml-1 flex items-center gap-1"><Github size={10}/> Github URL</label>
-            <input placeholder="github.com/username" value={resume.personalInfo.github} onChange={(e) => updatePersonalInfo({github: e.target.value})} className="neon-input" />
-          </div>
+          <input placeholder="Full Name" className="neon-input" value={resume.personalInfo.name} onChange={e => updatePersonalInfo({ name: e.target.value })} />
+          <input placeholder="Email" className="neon-input" value={resume.personalInfo.email} onChange={e => updatePersonalInfo({ email: e.target.value })} />
+          <input placeholder="Phone" className="neon-input" value={resume.personalInfo.phone} onChange={e => updatePersonalInfo({ phone: e.target.value })} />
+          <input placeholder="Location" className="neon-input" value={resume.personalInfo.location || ''} onChange={e => updatePersonalInfo({ location: e.target.value })} />
         </div>
       </section>
 
-      {/* PROFESSIONAL SUMMARY - Connected with type 'summary' */}
+      {/* 2. PROFESSIONAL SUMMARY */}
       <section className="glass-card p-6 border-l-4 border-l-emerald-500">
         <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center gap-2">
-            <Sparkles size={14} className="text-emerald-400" />
-            <h2 className="text-[11px] font-black tracking-[0.2em] text-emerald-400 uppercase">
-              Professional Summary
-            </h2>
-          </div>
-          <button 
-            onClick={() => optimizeContent(resume.summary, 'summary')}
-            disabled={isLoading || !resume.summary}
-            className="flex items-center gap-2 text-[10px] font-black bg-emerald-500/10 text-emerald-400 px-3 py-1.5 rounded-lg border border-emerald-500/20 hover:bg-emerald-500/20 transition-all disabled:opacity-30 uppercase disabled:cursor-not-allowed"
+          <h2 className="text-[11px] font-black tracking-[0.2em] text-emerald-400 uppercase flex items-center gap-2">
+            <Sparkles size={14} /> Professional Summary
+          </h2>
+          <button
+           onClick={() => optimizeContent(resume.summary ?? '', 'summary')}
+            disabled={isLoading || !resume.summary || resume.summary.length < 10}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold hover:bg-emerald-500 hover:text-white transition-all disabled:opacity-50"
           >
-            {isLoading ? <Loader2 size={12} className="animate-spin" /> : <Zap size={12} />}
-            AI Optimize
+            {isLoading ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
+            {isLoading ? 'OPTIMIZING...' : 'AI OPTIMIZE'}
           </button>
         </div>
-        <div className="space-y-2">
-          <textarea 
-            placeholder="e.g. Final-year Computer Science student..." 
-            className="w-full bg-slate-900/40 p-4 rounded-xl border border-slate-800 text-sm text-slate-300 outline-none min-h-[120px] focus:border-emerald-500/50 transition-all" 
-            value={resume.summary} 
-            onChange={(e) => updateSummary(e.target.value)} 
-          />
-          <p className="text-[9px] text-slate-500 italic ml-1 font-medium">Tip: According to your PDF layout, 2-4 lines will look best.</p>
-        </div>
+        <textarea
+          className="w-full bg-slate-900/40 p-4 rounded-xl border border-slate-800 text-sm min-h-30 focus:border-emerald-500 outline-none transition-all"
+          placeholder="Briefly describe your career goals..."
+          value={resume.summary || ''}
+          onChange={e => updateSummary(e.target.value)}
+        />
       </section>
-          
-      {/* EDUCATION - Exactly same as yours */}
+
+      <ExperienceEditor />
+
+      {/* 4. EDUCATION */}
       <section className="glass-card p-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-[11px] font-black tracking-[0.2em] flex items-center gap-2 text-emerald-400 uppercase">
             <GraduationCap size={14} /> Education
           </h2>
-          <button onClick={() => addItem('education')} className="text-emerald-500 text-[10px] font-bold flex items-center gap-1 hover:bg-emerald-500/10 px-2 py-1 rounded transition-colors"><Plus size={14}/> ADD</button>
+          <button onClick={() => addItem('education')} className="styled-add-btn">
+            <Plus size={14}/> ADD EDUCATION
+          </button>
         </div>
-        {resume.education.map((edu) => (
-          <div key={edu.id} className="p-4 border border-slate-800 rounded-xl bg-slate-950/20 mb-4 space-y-3 relative group">
-            <button onClick={() => removeItem('education', edu.id)} className="absolute top-2 right-2 text-slate-700 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 size={14}/></button>
-            <input placeholder="University/School" className="neon-input font-bold" value={edu.school} onChange={(e) => updateItem('education', edu.id, {school: e.target.value})} />
-            <input placeholder="Degree" className="neon-input text-sm" value={edu.degree} onChange={(e) => updateItem('education', edu.id, {degree: e.target.value})} />
-            <div className="grid grid-cols-3 gap-3">
-              <select className="neon-input text-[10px] bg-slate-900 cursor-pointer" value={edu.scoreType || "CGPA"} onChange={(e) => updateItem('education', edu.id, {scoreType: e.target.value})}>
-                <option value="CGPA">CGPA</option>
-                <option value="Percentage">Percentage</option>
-              </select>
-              <input placeholder="Score" className="neon-input text-sm col-span-1" value={edu.score} onChange={(e) => updateItem('education', edu.id, {score: e.target.value})} />
-              <input placeholder="Year" className="neon-input text-sm" value={edu.year} onChange={(e) => updateItem('education', edu.id, {year: e.target.value})} />
+        {resume.education.map(edu => (
+          <div key={edu.id} className="p-4 border border-slate-800 rounded-xl mb-4 relative group bg-slate-900/20">
+            <button onClick={() => removeItem('education', edu.id)} className="delete-btn"><Trash2 size={14}/></button>
+            <input placeholder="Institution" className="neon-input font-bold mb-2" value={edu.institution} onChange={e => updateItem('education', edu.id, { institution: e.target.value })} />
+            <input placeholder="Degree" className="neon-input mb-2" value={edu.degree} onChange={e => updateItem('education', edu.id, { degree: e.target.value })} />
+            <div className="grid grid-cols-2 gap-3 mt-2">
+              <input placeholder="Start Date" className="neon-input text-xs" value={edu.startDate} onChange={e => updateItem('education', edu.id, { startDate: e.target.value })} />
+              <input placeholder="End Date" className="neon-input text-xs" value={edu.endDate} onChange={e => updateItem('education', edu.id, { endDate: e.target.value })} />
             </div>
           </div>
         ))}
       </section>
 
-      {/* EXPERIENCE - Connected with type 'experience' and id */}
-      <section className="glass-card p-6 border-l-4 border-l-emerald-500">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-[11px] font-black tracking-[0.2em] flex items-center gap-2 text-emerald-400 uppercase">
-            <Briefcase size={14} /> Experience & Internships
-          </h2>
-          <button onClick={() => addItem('experience')} className="text-emerald-500 text-[10px] font-bold flex items-center gap-1 hover:bg-emerald-500/10 px-2 py-1 rounded"><Plus size={14}/> ADD EXPERIENCE</button>
-        </div>
-        {resume.experience.map((exp) => (
-          <div key={exp.id} className="p-5 border border-slate-800 rounded-2xl bg-slate-950/40 mb-6 relative group transition-all hover:border-emerald-500/30">
-            <button onClick={() => removeItem('experience', exp.id)} className="absolute top-3 right-3 text-slate-700 hover:text-red-500 transition-opacity"><Trash2 size={16}/></button>
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input placeholder="Company" className="neon-input" value={exp.company} onChange={(e) => updateItem('experience', exp.id, {company: e.target.value})} />
-                <input placeholder="Role" className="neon-input" value={exp.role} onChange={(e) => updateItem('experience', exp.id, {role: e.target.value})} />
-              </div>
-              <input placeholder="Duration" className="neon-input" value={exp.duration} onChange={(e) => updateItem('experience', exp.id, {duration: e.target.value})} />
-              <div className="space-y-2">
-                <textarea 
-                  placeholder="Describe your work..." 
-                  className="w-full bg-slate-900/40 p-4 rounded-xl border border-slate-800 text-sm text-slate-300 outline-none min-h-[100px] focus:border-emerald-500/50" 
-                  value={exp.desc} 
-                  onChange={(e) => updateItem('experience', exp.id, {desc: e.target.value})} 
-                />
-                <button 
-                  onClick={() => optimizeContent(exp.desc, 'experience', exp.id)} 
-                  disabled={isLoading || !exp.desc}
-                  className="flex items-center gap-2 text-[10px] font-black bg-emerald-500/10 text-emerald-400 px-4 py-2 rounded-lg border border-emerald-500/20 hover:bg-emerald-500/20 transition-all uppercase disabled:opacity-30"
-                >
-                  {isLoading ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />} AI Optimize Experience
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
-      </section>
-
-      {/* PROJECTS - Exactly same as yours */}
+      {/* 5. PROJECTS */}
       <section className="glass-card p-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-[11px] font-black tracking-[0.2em] flex items-center gap-2 text-emerald-400 uppercase">
             <Folder size={14} /> Projects
           </h2>
-          <button onClick={() => addItem('projects')} className="text-emerald-500 text-[10px] font-bold flex items-center gap-1 hover:bg-emerald-500/10 px-2 py-1 rounded transition-colors"><Plus size={14}/> ADD</button>
+          <button onClick={() => addItem('projects')} className="styled-add-btn">
+            <Plus size={14}/> ADD PROJECT
+          </button>
         </div>
-        {resume.projects.map((proj) => (
-          <div key={proj.id} className="p-4 border border-slate-800 rounded-xl bg-slate-950/20 mb-4 space-y-3 relative group">
-            <button onClick={() => removeItem('projects', proj.id)} className="absolute top-2 right-2 text-slate-700 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 size={14}/></button>
-            <input placeholder="Project Name" className="neon-input font-bold" value={proj.name} onChange={(e) => updateItem('projects', proj.id, {name: e.target.value})} />
-            <input placeholder="Github/Live Link" className="neon-input text-[10px] text-blue-400" value={proj.link} onChange={(e) => updateItem('projects', proj.id, {link: e.target.value})} />
-            <textarea placeholder="Project description..." className="w-full bg-slate-900/40 p-2 rounded-lg border border-slate-800 text-xs text-slate-400 outline-none min-h-[60px]" value={proj.desc} onChange={(e) => updateItem('projects', proj.id, {desc: e.target.value})} />
+        {resume.projects?.map(proj => (
+          <div key={proj.id} className="p-4 border border-slate-800 rounded-xl mb-4 relative group bg-slate-900/20">
+            <button onClick={() => removeItem('projects', proj.id)} className="delete-btn"><Trash2 size={14}/></button>
+            <input placeholder="Project Name" className="neon-input font-bold mb-2" value={proj.name} onChange={e => updateItem('projects', proj.id, { name: e.target.value })} />
+            <textarea placeholder="Description..." className="w-full bg-slate-900/40 p-3 rounded-lg text-sm mt-2 border border-slate-800" value={proj.description} onChange={e => updateItem('projects', proj.id, { description: e.target.value })} />
           </div>
         ))}
       </section>
 
-      {/* SKILLS - Exactly same as yours */}
-      <section className="glass-card p-6 border-l-4 border-l-emerald-500">
-        <h2 className="text-[11px] font-black tracking-[0.2em] mb-6 flex items-center gap-2 text-emerald-400 uppercase">
-          <Zap size={14} /> Skills & Technologies
-        </h2>
-        <div className="space-y-4">
-          <input 
-            placeholder="e.g. React, Node.js, Python" 
-            className="neon-input"
-            value={resume.skills.join(', ')}
-            onChange={(e) => updateSkills(e.target.value.split(',').map(s => s.trim()))}
-          />
-          <div className="flex flex-wrap gap-2 mt-2">
-            {resume.skills.length > 0 && resume.skills[0] !== "" ? (
-              resume.skills.map((skill, i) => (
-                <div key={i} className="flex items-center gap-1.5 bg-emerald-500/5 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all hover:bg-emerald-500/10">
-                  <div className="w-1 h-1 bg-emerald-400 rounded-full animate-pulse"></div>
-                  {skill}
-                </div>
-              ))
-            ) : (
-              <p className="text-[10px] text-slate-600 italic">No skills added yet...</p>
-            )}
-          </div>
+      {/* 6. SKILLS */}
+      <section className="glass-card p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-[11px] font-black tracking-[0.2em] flex items-center gap-2 text-emerald-400 uppercase">
+            <Code size={14} /> Skills
+          </h2>
+          <button onClick={() => addItem('skills')} className="styled-add-btn">
+            <Plus size={14}/> ADD CATEGORY
+          </button>
+        </div>
+        <div className="grid gap-4">
+          {resume.skills.map(group => (
+            <div key={group.id} className="p-4 border border-slate-800 rounded-xl relative group bg-slate-900/20">
+              <button onClick={() => removeItem('skills', group.id)} className="delete-btn"><Trash2 size={14}/></button>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <input placeholder="Category (e.g., Languages)" className="neon-input font-bold md:col-span-1" value={group.category} onChange={e => updateItem('skills', group.id, { category: e.target.value })} />
+                <input placeholder="Skills (comma separated)" className="neon-input md:col-span-2" value={group.skills.join(', ')} onChange={e => updateItem('skills', group.id, { skills: e.target.value.split(',').map(s => s.trim()) })} />
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
+      {/* 7. CERTIFICATIONS */}
+      <section className="glass-card p-6 border-l-4 border-l-emerald-500">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-[11px] font-black tracking-[0.2em] flex items-center gap-2 text-emerald-400 uppercase">
+            <Award size={14} /> Certifications
+          </h2>
+          <button onClick={() => addItem('certifications')} className="styled-add-btn">
+            <Plus size={14}/> ADD CERT
+          </button>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {resume.certifications?.map(cert => (
+            <div key={cert.id} className="p-4 border border-slate-800 rounded-xl relative group bg-slate-900/20">
+              <button onClick={() => removeItem('certifications', cert.id)} className="delete-btn"><Trash2 size={14}/></button>
+              <input placeholder="Certification Name" className="neon-input text-sm font-bold" value={cert.name} onChange={e => updateItem('certifications', cert.id, { name: e.target.value })} />
+              <input placeholder="Issuer" className="neon-input text-xs mt-2" value={cert.issuer} onChange={e => updateItem('certifications', cert.id, { issuer: e.target.value })} />
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 };

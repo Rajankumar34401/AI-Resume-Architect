@@ -1,44 +1,102 @@
-import Editor from './components/Editor';
-import { Preview } from './components/Preview';
+import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import Dashboard from './pages/dashboard';
+import BuilderPage from './pages/BuilderPage';
+import AuthPage from './pages/authPage';
+
+// Protected Route Wrapper
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const token = localStorage.getItem('token');
+  
+  // Check if user is authenticated via token
+  const isAuthenticated = !!token;
+  
+  return isAuthenticated ? <>{children}</> : <Navigate to="/auth" replace />;
+};
+
+// Public Route (redirect to dashboard if already logged in)
+const PublicRoute = ({ children }: { children: React.ReactNode }) => {
+  const token = localStorage.getItem('token');
+  
+  return token ? <Navigate to="/" replace /> : <>{children}</>;
+};
 
 function App() {
   return (
-    <div className="flex h-screen w-full bg-[#020617] overflow-hidden font-sans">
-      {/* LEFT SIDE: Editor (40%) */}
-      <div className="flex flex-col w-[40%] h-full border-r border-slate-800">
-        <header className="p-8 shrink-0">
-          <div className="flex items-center gap-3">
-            {/* Emerald Logo Box */}
-            <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-xl shadow-[0_0_20px_rgba(52,211,153,0.3)]"></div>
-            <div>
-              <h1 className="text-lg font-black tracking-tighter text-white uppercase">
-                CareerForge <span className="text-emerald-500">Pro</span>
-              </h1>
-              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Implementation Phase</p>
-            </div>
-          </div>
-        </header>
+    <>
+      {/* Global Toast Notifications */}
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: '#1e293b',
+            color: '#fff',
+            borderRadius: '12px',
+            fontSize: '14px',
+            fontWeight: 'bold',
+            border: '1px solid #334155',
+          },
+          success: {
+            iconTheme: {
+              primary: '#10b981',
+              secondary: '#fff',
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#fff',
+            },
+          },
+        }}
+      />
 
-        {/* Editor Scrollable Area */}
-        <div className="flex-1 overflow-y-auto px-8 pb-20 custom-scrollbar">
-          <Editor />
-        </div>
-      </div>
+      <Routes>
+        {/* Public Routes */}
+        <Route
+          path="/auth"
+          element={
+            <PublicRoute>
+              <AuthPage />
+            </PublicRoute>
+          }
+        />
 
-      {/* RIGHT SIDE: Preview (60%) */}
-      <div className="w-[60%] h-full bg-[#0f172a] flex justify-center items-start overflow-y-auto p-10 custom-scrollbar">
-        {/* Scaling logic: Adjust scale-[0.5] if still not visible */}
-        <div className="relative origin-top transform scale-[0.55] lg:scale-[0.65] xl:scale-[0.75] 2xl:scale-[0.85] transition-all duration-500 shadow-[0_60px_100px_-20px_rgba(0,0,0,0.7)]">
-          
-          {/* Neon Glow behind the paper */}
-          <div className="absolute -inset-10 bg-emerald-500/10 blur-[120px] rounded-full"></div>
-          
-          <div className="relative bg-white">
-             <Preview />
-          </div>
-        </div>
-      </div>
-    </div>
+        {/* Protected Routes */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/builder"
+          element={
+            <ProtectedRoute>
+              <BuilderPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/builder/:id"
+          element={
+            <ProtectedRoute>
+              <BuilderPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Catch all - redirect to home */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </>
   );
 }
 

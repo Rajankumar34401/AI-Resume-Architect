@@ -1,110 +1,127 @@
+// store/useResumeStore.ts
 import { create } from 'zustand';
-import type { ResumeData } from '../types/resume';
+import type { ResumeData, Skill } from '../types/resume';
+import { aiService, resumeService } from '../services/Api';
 
 interface ResumeStore {
   resume: ResumeData;
   isLoading: boolean;
   updatePersonalInfo: (info: Partial<ResumeData['personalInfo']>) => void;
   updateSummary: (text: string) => void;
-  // Naya generic function jo dono ke liye kaam karega
-  optimizeContent: (text: string, type: 'summary' | 'experience', id?: string) => Promise<void>; 
-  addItem: (section: 'experience' | 'education' | 'projects' | 'certificates') => void;
-  updateItem: (section: 'experience' | 'education' | 'projects' | 'certificates', id: string, data: any) => void;
-  removeItem: (section: 'experience' | 'education' | 'projects' | 'certificates', id: string) => void;
-  updateSkills: (skills: string[]) => void;
+  addItem: (section: 'experience' | 'education' | 'projects' | 'certifications' | 'skills') => void;
+  updateItem: (section: 'experience' | 'education' | 'projects' | 'certifications' | 'skills', id: string, data: any) => void;
+  removeItem: (section: 'experience' | 'education' | 'projects' | 'certifications' | 'skills', id: string) => void;
+  updateSkills: (skills: Skill[]) => void;
+  setResumeData: (data: any) => void;
+  resetResume: () => void;
+  saveResume: (id: string | null) => Promise<void>;
+  optimizeContent: (text: string | undefined, type: 'summary' | 'experience', id?: string) => Promise<void>;
 }
 
+const initialData: ResumeData = {
+  personalInfo: { name: '', email: '', phone: '', location: '', linkedin: '', github: '', portfolio: '' },
+  summary: '',
+  experience: [],
+  education: [],
+  skills: [],
+  projects: [],
+  certifications: [],
+};
+
 export const useResumeStore = create<ResumeStore>((set, get) => ({
-  resume: {
-    personalInfo: { fullName: '', role: '', email: '', phone: '', linkedin: '', github: '', city: '' },
-    summary: '',
-    experience: [],
-    education: [],
-    skills: [],
-    projects: [],
-    certificates: [],
-  },
+  resume: initialData,
   isLoading: false,
 
-  updatePersonalInfo: (info) => set((state) => ({
-    resume: { ...state.resume, personalInfo: { ...state.resume.personalInfo, ...info } }
-  })),
+  setResumeData: (payload) => {
+    const data = payload?.resumeData ? payload.resumeData : payload;
+    set({ resume: { ...initialData, ...data } });
+  },
 
-  updateSummary: (text) => set((state) => ({
-    resume: { ...state.resume, summary: text }
-  })),
+  resetResume: () => set({ resume: initialData }),
 
-  // --- GENERIC AI OPTIMIZE LOGIC ---
+  updatePersonalInfo: (info) =>
+    set((state) => ({ resume: { ...state.resume, personalInfo: { ...state.resume.personalInfo, ...info } } })),
+
+  updateSummary: (text) => set((state) => ({ resume: { ...state.resume, summary: text } })),
+
   optimizeContent: async (text, type, id) => {
-    if (!text || text.length < 10) {
-      alert("Bhai, thoda text toh likho pehle!");
-      return;
-    }
-
+    if (!text || text.length < 10) return;
     set({ isLoading: true });
+
     try {
-      const response = await fetch('http://localhost:5000/api/optimize-summary', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        // Yahan text aur type dono backend bhej rahe hain [cite: 2025-12-29]
-        body: JSON.stringify({ text, type }), 
-      });
+      // Call the service from Api.ts
+      const res = await aiService.optimizeSummary(text);
+      
+      // Axios puts the backend response in .data
+      const optimizedText = res.data?.optimizedText;
 
-      const data = await response.json();
-
-      if (data.optimizedText) {
-        if (type === 'summary') {
-          // Summary update karein [cite: 2025-12-29]
-          set((state) => ({
-            resume: { ...state.resume, summary: data.optimizedText }
-          }));
-        } else if (type === 'experience' && id) {
-          // Specific Experience item update karein [cite: 2025-12-29]
-          set((state) => ({
-            resume: {
-              ...state.resume,
-              experience: state.resume.experience.map((exp: any) =>
-                exp.id === id ? { ...exp, desc: data.optimizedText } : exp
-              )
-            }
-          }));
-        }
+      if (!optimizedText) {
+        console.error("Backend returned success but no optimizedText field");
+        return;
       }
-    } catch (error) {
-      console.error("AI Error:", error);
-      alert("AI optimization fail ho gayi.");
+
+      if (type === 'summary') {
+        set((state) => ({ resume: { ...state.resume, summary: optimizedText } }));
+      } else if (type === 'experience' && id) {
+        set((state) => ({
+          resume: {
+            ...state.resume,
+            experience: state.resume.experience.map((exp) =>
+              exp.id === id 
+                ? { ...exp, responsibilities: optimizedText.split('\n').map((s: string) => s.replace(/^[•\-\*]\s*/, '').trim()).filter(Boolean) } 
+                : exp
+            ),
+          },
+        }));
+      }
+    } catch (err: any) {
+      // Log the actual error response from the server
+      console.error('AI Optimization failed:', err.response?.data || err.message);
+      alert(err.response?.data?.error || "AI Service is currently unavailable.");
     } finally {
       set({ isLoading: false });
     }
   },
 
-  addItem: (section) => set((state) => {
-    const newItem = { 
-      id: Date.now().toString(),
-      ...(section === 'experience' && { company: '', role: '', duration: '', desc: '' }),
-      ...(section === 'education' && { school: '', degree: '', year: '', score: '', scoreType: 'CGPA' }),
-      ...(section === 'projects' && { name: '', link: '', desc: '' }),
-      ...(section === 'certificates' && { name: '', issuer: '', date: '' }),
-    };
-    return {
-      resume: { ...state.resume, [section]: [...state.resume[section], newItem] }
-    };
-  }),
-
-  updateItem: (section, id, data) => set((state) => ({
-    resume: {
-      ...state.resume,
-      [section]: state.resume[section].map((item: any) => 
-        item.id === id ? { ...item, ...data } : item
-      )
+  saveResume: async (id) => {
+    const { resume } = get();
+    try {
+      await resumeService.save(resume, id ?? undefined);
+    } catch (err) {
+      console.error('Save Error:', err);
     }
-  })),
+  },
 
-  removeItem: (section, id) => set((state) => ({
-    resume: { ...state.resume, [section]: state.resume[section].filter((item: any) => item.id !== id) }
-  })),
+  addItem: (section) => {
+    const uniqueId = crypto.randomUUID();
+    const newItemDefaults: any = {
+      experience: { company: '', position: '', startDate: '', endDate: '', current: false, responsibilities: [] },
+      education: { institution: '', degree: '', startDate: '', endDate: '', gpa: '' },
+      projects: { name: '', description: '', link: '', technologies: [] },
+      certifications: { name: '', issuer: '', date: '', credentialId: '' },
+      skills: { category: '', skills: [] },
+    };
+    const newItem = { id: uniqueId, ...newItemDefaults[section] };
+    set((state) => ({
+      resume: { ...state.resume, [section]: [...(state.resume[section] || []), newItem] },
+    }));
+  },
 
-  updateSkills: (skills) => set((state) => ({
-    resume: { ...state.resume, skills }
-  })),
+  updateItem: (section, id, data) =>
+    set((state) => ({
+      resume: {
+        ...state.resume,
+        [section]: (state.resume[section] as any[]).map((item) => (item.id === id ? { ...item, ...data } : item)),
+      },
+    })),
+
+  removeItem: (section, id) =>
+    set((state) => ({
+      resume: {
+        ...state.resume,
+        [section]: (state.resume[section] as any[]).filter((item) => item.id !== id),
+      },
+    })),
+
+  updateSkills: (skills) => set((state) => ({ resume: { ...state.resume, skills } })),
 }));

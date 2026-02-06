@@ -1,40 +1,99 @@
+// types/resume.ts or store/types.ts
+
 export interface ResumeData {
+  // --- MongoDB Fields ---
+  _id?: string;       // MongoDB unique ID (only present after saving)
+  userId?: string;    // Reference to User (handled by backend from token)
+  
+  // --- Personal Information ---
   personalInfo: {
-    fullName: string;
-    role: string;
+    name: string;           // ✅ Changed from 'fullName' to 'name'
     email: string;
     phone: string;
-    linkedin: string;
-    github: string; 
-    city: string;
+    location?: string;      // ✅ Changed from 'city' to 'location' (optional)
+    linkedin?: string;      // ✅ Made optional
+    portfolio?: string;     // ✅ Added portfolio field
+    github?: string;        // ✅ Made optional
   };
-  summary: string;
+
+  // --- Professional Summary ---
+  summary?: string;         // ✅ Made optional
+
+  // --- Work Experience ---
   experience: {
-    id: string;
+    id: string;             // Client-side ID for rendering
+    position: string;       // ✅ Changed from 'role' to 'position'
     company: string;
-    role: string;
-    duration: string;
-    desc: string;
+    location?: string;      // ✅ Added location field
+    startDate: string;      // ✅ Changed from 'duration' to startDate/endDate
+    endDate: string;        // ✅ Added endDate
+    current: boolean;       // ✅ Added current job flag
+    responsibilities: string[]; // ✅ Changed from 'desc' to 'responsibilities' array
   }[];
+
+  // --- Education ---
   education: {
     id: string;
-    school: string;
     degree: string;
-    year: string;
-    score: string;      // CGPA/Percentage value ke liye (e.g. 6.00/10.0)
-    scoreType: string;  // "CGPA" ya "Percentage" store karne ke liye
+    institution: string;    // ✅ Changed from 'school' to 'institution'
+    location?: string;      // ✅ Added location
+    startDate: string;      // ✅ Changed from 'year' to startDate/endDate
+    endDate: string;
+    gpa?: string;           // ✅ Changed from 'score' to 'gpa' (optional)
   }[];
-  skills: string[];
-  projects: {
+
+  // --- Skills ---
+  skills: Skill[];          // ✅ Changed from string[] to Skill[] with categories
+
+  // --- Projects (Optional) ---
+  projects?: {              // ✅ Made optional
     id: string;
     name: string;
-    link: string;
-    desc: string;
+    link?: string;          // ✅ Made optional
+    description: string;    // ✅ Changed from 'desc' to 'description'
+    technologies?: string[]; // ✅ Added technologies array
   }[];
-  certificates: {
+
+  // --- Certifications (Optional) ---
+  certifications?: {        // ✅ Changed from 'certificates' to 'certifications'
     id: string;
     name: string;
     issuer: string;
     date: string;
+    credentialId?: string;  // ✅ Added credential ID
   }[];
+
+  // --- Resume Settings ---
+  template?: string;        // ✅ Added template selection
+  colorScheme?: string;     // ✅ Added color scheme
+
+  // --- ATS Features ---
+  jobDescription?: string;  // ✅ Added job description field
+  atsScore?: number;        // ✅ Added ATS score
+  extractedKeywords?: string[]; // ✅ Added extracted keywords
+
+  // --- Timestamps ---
+  createdAt?: string;       // ✅ Added creation timestamp
+  updatedAt?: string;       // ✅ Added update timestamp
+}
+
+// --- Skill Interface with Categories ---
+export interface Skill {
+  id: string; // Add this line
+  category: string;
+  skills: string[];
+}
+
+// --- Full Resume Interface (matches backend) ---
+export interface Resume {
+  _id: string;
+  userId: string;
+  resumeData: ResumeData;
+  template: string;
+  colorScheme: string;
+  jobDescription?: string;
+  atsScore?: number;
+  extractedKeywords?: string[];
+  createdAt: string;
+  updatedAt: string;
 }

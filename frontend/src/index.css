@@ -38,3 +38,17 @@ body {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #475569;
 }
+/* Styling for the Add Buttons */
+.styled-add-btn {
+  @apply flex items-center gap-2 px-4 py-2 rounded-lg 
+         bg-emerald-500/5 border border-emerald-500/20 
+         text-emerald-400 text-[10px] font-black tracking-widest
+         hover:bg-emerald-500 hover:text-white 
+         hover:shadow-[0_0_20px_rgba(16,185,129,0.3)]
+         transition-all duration-300 uppercase;
+}
+
+/* Enhancing the AI Optimize Button Glow */
+.glass-card {
+  @apply backdrop-blur-md bg-slate-900/50 border border-slate-800 rounded-2xl;
+}
