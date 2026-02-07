@@ -1,6 +1,7 @@
 import type { Response } from 'express';
 import mongoose from 'mongoose';
 import Resume from '../models/resume.js';
+import User from '../models/user.js'; 
 import type { AuthRequest, ApiResponse, IResume } from '../types/index.js';
 
 // ============================================
@@ -89,6 +90,11 @@ export const saveResume = async (
     });
 
     await newResume.save();
+
+    // ✅ NEW: Increment the resumeCount for this user
+      await User.findByIdAndUpdate(userId, { 
+        $inc: { resumeCount: 1 } 
+      });
 
     return res.status(201).json({
       success: true,
@@ -251,6 +257,11 @@ export const deleteResume = async (
     }
 
     await Resume.findByIdAndDelete(id);
+
+    // ✅ NEW: Decrement the resumeCount for this user
+      await User.findByIdAndUpdate(userId, { 
+        $inc: { resumeCount: -1 } 
+      });
 
     return res.status(200).json({
       success: true,
