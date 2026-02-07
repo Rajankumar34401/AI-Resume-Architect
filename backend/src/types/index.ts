@@ -65,9 +65,8 @@ export interface Project {
 }
 
 export interface Skill {
-  id: string; // Add this
-  category: string;
-  skills: string[];
+  id: string; 
+  name: string; 
 }
 
 export interface Certification {
