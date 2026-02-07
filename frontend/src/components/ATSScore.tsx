@@ -20,44 +20,59 @@ export const ATSScore = () => {
   const [isDownloading, setIsDownloading] = useState(false);
 
   // Flatten all skills
-  const flatSkills = resume.skills.flatMap((s) => s.skills);
+  // 1. Get a simple array of names for easy checking
+const flatSkillsNames = resume.skills.map((s) => s.name.toLowerCase());
 
-  // Inject single keyword
-  const handleInject = (keyword: string) => {
-    if (flatSkills.includes(keyword)) return;
+// 2. Inject single keyword
+const handleInject = (keyword: string) => {
+  // Prevent duplicates (case-insensitive check)
+  if (flatSkillsNames.includes(keyword.toLowerCase())) return;
 
-    const updatedSkills = [...resume.skills];
-    const generalIndex = updatedSkills.findIndex(
-      (s) => s.category === "Technical Skills" || s.category === "General"
-    );
-
-    if (generalIndex > -1) {
-      updatedSkills[generalIndex] = {
-        ...updatedSkills[generalIndex],
-        skills: [...updatedSkills[generalIndex].skills, keyword],
-      };
-    } else {
-      updatedSkills.push({
-        id: crypto.randomUUID(),
-        category: "Technical Skills",
-        skills: [keyword],
-      });
-    }
-
-    updateSkills(updatedSkills);
-
-    if (result) {
-      setResult({
-        ...result,
-        missingKeywords: result.missingKeywords.filter((k) => k !== keyword),
-      });
-    }
+  // Create the new skill object matching your new flat structure
+  const newSkill = {
+    id: crypto.randomUUID(),
+    name: keyword,
   };
 
-  const injectAll = () => {
-    if (!result?.missingKeywords) return;
-    result.missingKeywords.forEach(handleInject);
-  };
+  // Add the new skill to the existing flat list
+  const updatedSkills = [...resume.skills, newSkill];
+
+  // Update the store
+  updateSkills(updatedSkills);
+
+  // Remove the keyword from the missing list in the UI
+  if (result) {
+    setResult({
+      ...result,
+      missingKeywords: result.missingKeywords.filter((k) => k !== keyword),
+    });
+  }
+};
+
+const injectAll = () => {
+  if (!result?.missingKeywords || result.missingKeywords.length === 0) return;
+
+  const currentSkillNames = new Set(resume.skills.map((s) => s.name.toLowerCase()));
+  
+  // Filter out keywords already in the resume, then format as objects
+  const newSkillsToAdd = result.missingKeywords
+    .filter(k => !currentSkillNames.has(k.toLowerCase()))
+    .map(k => ({
+      id: crypto.randomUUID(),
+      name: k
+    }));
+
+  if (newSkillsToAdd.length === 0) return;
+
+  // Single update to the store with all new skills appended
+  updateSkills([...resume.skills, ...newSkillsToAdd]);
+
+  // Clear the missing keywords list in the UI
+  setResult({
+    ...result,
+    missingKeywords: []
+  });
+};
 
   // ==============================
   // ATS Score
