@@ -78,10 +78,10 @@ export interface ResumeData {
 }
 
 // --- Skill Interface with Categories ---
+// Replace the old Skill interface with this:
 export interface Skill {
-  id: string; // Add this line
-  category: string;
-  skills: string[];
+  id: string;
+  name: string; // Only need the skill name
 }
 
 // --- Full Resume Interface (matches backend) ---

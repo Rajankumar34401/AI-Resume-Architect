@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios, { AxiosError } from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, ArrowRight, User } from 'lucide-react';
+import { Mail, Lock, ArrowRight, User, Eye, EyeOff } from 'lucide-react';
 
 // API Response Types
 interface AuthResponse {
@@ -24,6 +24,7 @@ const AuthPage = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -140,19 +141,35 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
           </div>
 
           {/* Password field */}
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5" />
-            <input
-              type="password"
-              placeholder="Password"
-              className="w-full pl-11 pr-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 transition-colors"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={6}
-              disabled={loading}
-            />
-          </div>
+         {/* Password field */}
+<div className="relative">
+  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5" />
+  
+  <input
+    // Logic: Toggle between "password" and "text" types
+    type={showPassword ? "text" : "password"}
+    placeholder="Password"
+    className="w-full pl-11 pr-12 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 transition-colors"
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    required
+    minLength={6}
+    disabled={loading}
+  />
+          {/* {password field} */}
+          {/* Toggle Button */}
+          <button
+            type="button" // Important: prevents form submission on click
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 focus:outline-none transition-colors"
+          >
+            {showPassword ? (
+              <EyeOff className="w-5 h-5" />
+            ) : (
+              <Eye className="w-5 h-5" />
+            )}
+          </button>
+        </div>
 
           {/* Password hint for signup */}
           {!isLogin && (

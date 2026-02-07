@@ -8,17 +8,18 @@ export const generatePDF = async (htmlContent: string) => {
 
   const page = await browser.newPage();
   
-  // High-density screen simulation helps with rendering quality
   await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 2 });
   
   await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
   
   const pdfBuffer = await page.pdf({
-    format: 'A4',
+    // REMOVE format: 'A4' -> This forces the 297mm height even if content is shorter
     printBackground: true,
-    margin: { top: '0', right: '0', bottom: '0', left: '0' }, // Change to 0
-    preferCSSPageSize: true,
-    displayHeaderFooter: false
+    margin: { top: '0', right: '0', bottom: '0', left: '0' },
+    preferCSSPageSize: true, // This will now correctly respect your @page { size: A4 }
+    displayHeaderFooter: false,
+    // ADD THIS: It ensures the background colors/images are captured correctly
+    omitBackground: false 
   });
 
   await browser.close();

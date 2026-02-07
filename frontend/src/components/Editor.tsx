@@ -95,17 +95,25 @@ const Editor: React.FC = () => {
             <Code size={14} /> Skills
           </h2>
           <button onClick={() => addItem('skills')} className="styled-add-btn">
-            <Plus size={14}/> ADD CATEGORY
+            <Plus size={14}/> ADD SKILL
           </button>
         </div>
-        <div className="grid gap-4">
-          {resume.skills.map(group => (
-            <div key={group.id} className="p-4 border border-slate-800 rounded-xl relative group bg-slate-900/20">
-              <button onClick={() => removeItem('skills', group.id)} className="delete-btn"><Trash2 size={14}/></button>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <input placeholder="Category (e.g., Languages)" className="neon-input font-bold md:col-span-1" value={group.category} onChange={e => updateItem('skills', group.id, { category: e.target.value })} />
-                <input placeholder="Skills (comma separated)" className="neon-input md:col-span-2" value={group.skills.join(', ')} onChange={e => updateItem('skills', group.id, { skills: e.target.value.split(',').map(s => s.trim()) })} />
-              </div>
+        
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          {resume.skills.map((skill) => (
+            <div key={skill.id} className="relative group">
+              <input 
+                placeholder="Skill (e.g., React)" 
+                className="neon-input pr-10" 
+                value={skill.name} 
+                onChange={e => updateItem('skills', skill.id, { name: e.target.value })} 
+              />
+              <button 
+                onClick={() => removeItem('skills', skill.id)} 
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <Trash2 size={14}/>
+              </button>
             </div>
           ))}
         </div>

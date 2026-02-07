@@ -99,7 +99,7 @@ export const useResumeStore = create<ResumeStore>((set, get) => ({
       education: { institution: '', degree: '', startDate: '', endDate: '', gpa: '' },
       projects: { name: '', description: '', link: '', technologies: [] },
       certifications: { name: '', issuer: '', date: '', credentialId: '' },
-      skills: { category: '', skills: [] },
+      skills: { name: '' },
     };
     const newItem = { id: uniqueId, ...newItemDefaults[section] };
     set((state) => ({
@@ -123,5 +123,6 @@ export const useResumeStore = create<ResumeStore>((set, get) => ({
       },
     })),
 
-  updateSkills: (skills) => set((state) => ({ resume: { ...state.resume, skills } })),
+  updateSkills: (skills) => set((state) => 
+    ({ resume: { ...state.resume, skills } })),
 }));
