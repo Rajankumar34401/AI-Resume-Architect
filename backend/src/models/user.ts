@@ -53,6 +53,11 @@ const userSchema = new Schema<IUserDocument>(
   }
 );
 
+// Optional: Add a helper method to check if user can create more resumes
+userSchema.methods.canCreateResume = function() {
+  if (this.plan === 'pro') return true;
+  return this.resumeCount < 1; // Free tier limit
+};
 // ✅ REMOVE THIS
 // userSchema.index({ email: 1 });
 

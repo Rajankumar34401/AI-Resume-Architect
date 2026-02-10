@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import resumeRoutes from './routes/resumeRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import paymentRoutes from './routes/paymentRoutes.js';
 
 
 
@@ -27,6 +28,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // ============================================
 app.use('/api/auth', authRoutes);
 app.use('/api/resumes', resumeRoutes);
+app.use('/api/payment', paymentRoutes);
 
 // Health check
 app.get('/health', (req: Request, res: Response) => {
