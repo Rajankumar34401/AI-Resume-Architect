@@ -1,18 +1,12 @@
+I have compiled everything into a single, comprehensive `README.md`. This is structured as a "Master Canvas" that includes your architecture, RAG logic, all four development phases, and the consolidated environment setup.
+
+You can copy the block below and paste it directly into your VS Code editor.
+
+```markdown
 # 🚀 AI-Resume-Architect – Intelligent Career Intelligence System (RAG Based)
 
 **AI-Resume-Architect** is a context-aware resume engineering platform that transforms static professional data into ATS-optimized documents through semantic analysis and AI-driven insights.  
 The system is built using a **Retrieval-Augmented Generation (RAG)** architecture powered exclusively by **Google Gemini AI** for both vector embeddings and high-fidelity content generation, with **MongoDB Atlas Vector Search** as the data backbone.
-
----
-
-## 👥 Team Members & Roles
-
-| Name                     | Role                                   | Responsibilities |
-|--------------------------|----------------------------------------|------------------|
-| **Munish Rajan (Leader)** | **Lead Integrator & System Architect** | System Architecture, Master Admin Logic, MongoDB Vector Aggregation, Context Window Logic, SSE Streaming, Gemini AI Integration. |
-| **Suzzan Naaz** | **Auth & Conversational UI Developer** | Secure JWT & OAuth, Persistent Resume Storage, Real-Time AI Suggestion UI, Source Grounding Interface, Session Management. |
-| **Heni Patel** | **System Architect & Editor Specialist**| Puppeteer-based PDF Export, Dynamic Experience Editor Modules, Frontend State Management. |
-| **Gagan** | **Database & Analysis Expert** | MongoDB Atlas Vector Indexing, Schema Design, ATS Scoring Logic, Cloud Storage Management. |
 
 ---
 
@@ -40,32 +34,29 @@ AI-Resume-Architect follows a **multi-layered RAG architecture**:
 
 ---
 
-## 📈 Development Roadmap (The 4 Phases)
+## 📁 Project Structure
 
-### ✅ Phase 1: Dual-Source Foundation & Styling
-- **Architecture:** Established independent `frontend/` and `backend/` directories.
-- **UI Engine:** Integrated **Tailwind CSS v4** with a custom Neon-Glassmorphism design system.
-- **Tech Setup:** Configured `tsx` for backend execution and Vite for frontend bundling.
+```text
+AI-RESUME-ARCHITECT/
+├── frontend/                 # React.js (Vite) + Tailwind CSS v4
+│   ├── .env                  # Frontend Environment Variables
+│   ├── src/
+│   │   ├── components/       # Editor, Preview, ATS Dashboard
+│   │   ├── store/            # Zustand state management
+│   │   └── pages/            # Dashboard, Builder, Auth
+├── backend/                  # Node.js + Express AI Server
+│   ├── .env                  # Backend Environment Variables
+│   ├── src/
+│   │   ├── controllers/      # Auth, AI, & Resume logic
+│   │   ├── models/           # MongoDB schemas
+│   │   └── utils/            # RAG, Puppeteer, Vector search
 
-### ✅ Phase 2: Core Editor & State Management
-- **Components:** Built the `Editor.tsx` and `ExperienceEditor.tsx` for structured data entry.
-- **State:** Implemented **Zustand** store with local persistence to handle complex resume objects.
-- **Preview:** Created a real-time A4 CSS-grid renderer for live feedback.
-
-### ✅ Phase 3: Gemini AI Integration & RAG Pipeline
-- **Embeddings:** Connected **Gemini AI API** to vectorize user skills and summaries.
-- **Inference:** Integrated **Gemini Pro** for context-aware AI suggestions and ATS critiques.
-- **Vector Search:** Developed the **MongoDB Atlas** aggregation pipeline for semantic retrieval.
-- **Mock Payment:** Built the "Pro Unlock" flow to simulate premium feature access.
-
-### 🚧 Phase 4: Persistence & Production Scaling
-- **Authentication:** Implementing **JWT & Google OAuth** for secure user sessions.
-- **Cloud Storage:** Moving local state to MongoDB for multi-device resume access.
-- **PDF Engine:** Finalizing **Puppeteer** server-side rendering for high-resolution exports.
+```
 
 ---
 
 ## 🛠️ Tech Stack
+
 * **Backend:** Node.js, Express.js (TypeScript)
 * **Frontend:** React 18, Vite, Tailwind CSS v4
 * **AI Engine:** Google Gemini AI (1.5 Flash/Pro)
@@ -74,17 +65,79 @@ AI-Resume-Architect follows a **multi-layered RAG architecture**:
 
 ---
 
-## 🧪 Challenges & Solutions (Leadership Insights)
+## 📈 Development Roadmap
 
-- **Unified AI Implementation:** Using a single provider (**Gemini**) reduced API complexity and token overhead. We successfully utilized Gemini's large context window to pass more retrieved benchmarks from MongoDB, leading to more accurate resume tailoring.
-  
-- **State Management & Synchronization:**
-  Handling complex resume state across multiple tabs was solved by implementing a **Zustand store with persistence middleware**, ensuring no data loss during refresh.
+### ✅ Phase 1: Dual-Source Foundation & Styling
 
-- **PDF Consistency:** Browser-based printing often broke Tailwind CSS v4 layouts. We moved PDF generation to the **Backend (Puppeteer)** to ensure every user receives an identical, high-quality document.
+* **Architecture:** Established independent `frontend/` and `backend/` directories.
+* **UI Engine:** Integrated **Tailwind CSS v4** with a custom Neon-Glassmorphism design system.
+* **Setup:** Configured separate `tsconfig` and environmental logic for decoupled scaling.
+
+### ✅ Phase 2: Core Editor & State Management
+
+* **Components:** Built the `Editor.tsx` and `ExperienceEditor.tsx` for structured data entry.
+* **State:** Implemented **Zustand** store with local persistence for complex resume objects.
+* **Live Preview:** Created a real-time A4 CSS-grid renderer for instant visual feedback.
+
+### ✅ Phase 3: Gemini AI Integration & RAG Pipeline
+
+* **Embeddings:** Connected **Gemini AI API** to vectorize user skills and summaries.
+* **Vector Search:** Developed the **MongoDB Atlas** aggregation pipeline for semantic retrieval.
+* **Mock Payment:** Built a realistic "Pro Unlock" flow with checkout modals to simulate premium access.
+
+### 🚧 Phase 4: Persistence & Production Scaling
+
+* **Authentication:** Implementing **JWT & Google OAuth** for secure user sessions.
+* **Cloud Storage:** Moving local state to MongoDB for multi-device resume access.
+* **PDF Engine:** Finalizing **Puppeteer** server-side rendering for high-resolution exports.
+* **Guard Logic:** Enforcing user limits (Free vs. Pro) via backend middleware.
+
+---
+
+## ⚙️ Setup & Environment Variables
+
+### 🖥️ Frontend Setup
+
+1. **Navigate to directory:** `cd frontend`
+2. **Install dependencies:** `npm install`
+3. **Configure `.env**`:
+```env
+VITE_API_BASE_URL=http://localhost:5000/api
+
+```
+
+
+4. **Run Development Server:** `npm run dev`
+
+### ⚙️ Backend Setup
+
+1. **Navigate to directory:** `cd backend`
+2. **Install dependencies:** `npm install`
+3. **Configure `.env**`:
+```env
+MONGO_URI=mongodb+srv://your_connection_string
+JWT_SECRET=your_super_secret_string
+GEMINI_API_KEY=your_google_gemini_api_key
+FRONTEND_URL=http://localhost:5173
+
+```
+
+
+4. **Run AI Server:** `npm run dev`
+
+---
+
+## 🧪 Challenges & Solutions
+
+* **Unified AI Implementation:** Using **Gemini** as a single provider reduced latency and improved context window management for RAG retrieval.
+* **State Synchronization:** Solved complex resume state updates by using **Zustand with persistence**, preventing data loss during user flow.
+* **PDF Consistency:** Moved rendering to **Puppeteer** on the backend to bypass client-side CSS print limitations in Tailwind v4 and ensure font-perfect exports.
 
 ---
 
 ## 🏁 Conclusion
 
-The **AI-Resume-Architect** project successfully demonstrates the integration of **Generative AI** and **Vector Databases**. Our team built a robust, scalable pipeline that provides users with a distinct advantage in a competitive, ATS-driven job market.
+The **AI-Resume-Architect** project successfully demonstrates the integration of **Generative AI** and **Vector Databases**. By bridging modern UI design with a robust RAG pipeline, we have created a scalable platform that provides users with a distinct advantage in a competitive, ATS-driven job market.
+
+```
+
