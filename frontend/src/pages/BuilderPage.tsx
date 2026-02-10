@@ -5,7 +5,7 @@ import { useResumeStore } from '../store/useResumeStore';
 import Editor from '../components/Editor';
 import { Preview } from '../components/Preview';
 import toast from 'react-hot-toast';
-import { Save, LayoutDashboard, Loader2 } from 'lucide-react';
+import { Save, LayoutDashboard, Loader2, AlertTriangle } from 'lucide-react';
 
 const BuilderPage = () => {
   const { id } = useParams();
@@ -13,7 +13,9 @@ const BuilderPage = () => {
   const { setResumeData, resetResume, resume } = useResumeStore();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [isLimitReached, setIsLimitReached] = useState(false);
 
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
   const token = localStorage.getItem('token');
 
@@ -25,9 +27,21 @@ const BuilderPage = () => {
     },
   };
 
+
+
   // Load resume data if editing existing
-  useEffect(() => {
-    const loadResume = async () => {
+ useEffect(() => {
+    const checkAccess = async () => {
+      // If creating NEW resume, check count for free users
+      if (!id && user.plan === 'free') {
+        try {
+          const res = await axios.get(`${API_URL}/resumes/list`, axiosConfig);
+          if (res.data.data.length >= 1) {
+            setIsLimitReached(true);
+            return;
+          }
+        } catch (err) { console.error(err); }
+      }
       if (id) {
         try {
           setLoading(true);
@@ -69,7 +83,7 @@ const BuilderPage = () => {
       }
     };
 
-    loadResume();
+checkAccess();
   }, [id, setResumeData, resetResume]);
 
   // Save resume
@@ -114,6 +128,24 @@ const BuilderPage = () => {
 
     return () => clearInterval(autoSaveInterval);
   }, [id, resume]);
+
+
+  // UI for Limit Reached
+  if (isLimitReached) {
+    return (
+      <div className="h-screen w-full bg-[#020617] flex items-center justify-center p-6 text-center">
+        <div className="max-w-md bg-slate-900 p-10 rounded-3xl border border-slate-800 shadow-2xl">
+          <AlertTriangle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-black text-white mb-2">PRO FEATURE</h2>
+          <p className="text-slate-400 mb-8">Free accounts are limited to 1 resume. Upgrade to Pro to create unlimited versions for different job descriptions.</p>
+          <div className="flex flex-col gap-3">
+            <button onClick={() => navigate('/')} className="bg-emerald-500 text-black font-black py-4 rounded-2xl hover:bg-emerald-400 transition-all">UPGRADE NOW</button>
+            <button onClick={() => navigate('/')} className="text-slate-500 font-bold hover:text-white transition-all">Back to Dashboard</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

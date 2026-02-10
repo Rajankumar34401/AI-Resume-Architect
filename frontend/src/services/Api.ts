@@ -16,6 +16,17 @@ api.interceptors.request.use((config) => {
 });
 
 // ==============================
+// Payment Services (Mock Stripe)
+// ==============================
+export const paymentService = {
+  // Triggers the mock upgrade in the backend
+  upgradeToPro: () => api.post('/payment/mock-checkout'),
+  
+  // Useful if you want to verify status on page load
+  getCurrentPlan: () => api.get('/auth/me'), 
+};
+
+// ==============================
 // Resume CRUD Services
 // ==============================
 export const resumeService = {
