@@ -1,144 +1,90 @@
-# 🚀 AI-Resume-Architect
+# 🚀 AI-Resume-Architect – Intelligent Career Intelligence System (RAG Based)
 
-**An AI-powered professional resume builder with real-time preview and ATS optimization.**
-
----
-## 📌 Overview
-
-AI-Resume-Architect is a full-stack application designed to help users craft professional resumes with dynamic previews and AI-driven ATS scoring.  
-It uses a **decoupled architecture** for scalability and maintainability.
+**AI-Resume-Architect** is a context-aware resume engineering platform that transforms static professional data into ATS-optimized documents through semantic analysis and AI-driven insights.  
+The system is built using a **Retrieval-Augmented Generation (RAG)** architecture powered exclusively by **Google Gemini AI** for both vector embeddings and high-fidelity content generation, with **MongoDB Atlas Vector Search** as the data backbone.
 
 ---
-## 👥 Team Roles & Contributions
 
-| Member Name | Role | Key Files | Responsibilities |
-|--------|------|-----------|------------------|
-| **Munish Rajan (Leader)** | Backend & UI/UX Expert | `editor.tsx`, `server.ts`, `aicontroller.ts` | Server setup, Gemini AI API integration, editor layout |
-| **Suzzan Naaz** | Data & Logic Manager | `useResumeStore.tsx`, `resume.ts`, `api.ts` | Zustand store, frontend-backend API bridge |
-| **Heni Patel** | System Architect & Editor Specialist | `pupiterservice.ts`, `experienceEditor.tsx` | Puppeteer-based PDF export, dynamic input modules |
-| **Gagan** | Output & Analysis Expert | `preview.tsx`, `atsscore.tsx` | Resume preview, ATS scoring visualization |
+## 👥 Team Members & Roles
 
----
-## 📁 Project Structure
-```text
-AI-Resume-Architect/
-├── frontend/
-│   ├── src/
-│   │   ├── assets/              # Static files (images, icons, fonts)
-│   │   ├── components/          # Reusable UI components
-│   │   ├── services/            # API handlers and external integrations
-│   │   ├── store/               # Zustand state management
-│   │   ├── types/               # TypeScript type definitions
-│   │   ├── App.css              # Global styles
-│   │   ├── App.tsx              # Main app component
-│   │   ├── index.css            # Tailwind base styles
-│   │   ├── main.tsx             # React entry point
-│   │   └── types.ts             # Shared types
-│   ├── vite.config.ts           # Vite bundler configuration
-│   ├── tailwind.config.js       # Tailwind CSS configuration
-│   ├── tsconfig.json            # TypeScript config
-│   └── package.json             # Frontend dependencies
-│
-├── backend/
-│   ├── controllers/             # Route logic and handlers
-│   ├── routes/                  # Express route definitions
-│   ├── services/                # Business logic and AI integrations
-│   ├── utils/                   # Helper functions and utilities
-│   ├── models/                  # Data models (if using DB)
-│   ├── middlewares/             # Custom Express middleware
-│   ├── server.ts                # Main Express server entry
-│   ├── aicontroller.ts          # Gemini AI API logic
-│   ├── pupiterservice.ts        # Puppeteer PDF export logic
-│   ├── resume.ts                # Resume data handler
-│   ├── api.ts                   # API bridge for frontend
-│   ├── tsconfig.json            # TypeScript config
-│   └── package.json             # Backend dependencies
-```
-## 📅 Phase 1 & 2: Initial Implementation
-
-- **Full-Stack Foundation**
-  - Separate environments for frontend and backend using TypeScript
-  - Integrated `tsx` for backend execution without manual builds
-
-- **Modern UI Engine**
-  - Tailwind CSS v4 with Glassmorphism and Neon-themed inputs
-  - Configured `@tailwindcss/vite` for seamless styling
-
-- **Core Components**
-  - `editor.tsx`: Resume Editor for real-time data entry
-  - `experienceEditor.tsx`: Experience module for job history
-  - `preview.tsx`: A4 resume preview renderer
-  - `atsscore.tsx`: ATS scoring dashboard
-
-- **Technical Stability**
-  - Resolved TypeScript global conflicts
-  - Optimized `tsconfig` for Node.js
-  - API testing via Postman
+| Name                     | Role                                   | Responsibilities |
+|--------------------------|----------------------------------------|------------------|
+| **Munish Rajan (Leader)** | **Lead Integrator & System Architect** | System Architecture, Master Admin Logic, MongoDB Vector Aggregation, Context Window Logic, SSE Streaming, Gemini AI Integration. |
+| **Suzzan Naaz** | **Auth & Conversational UI Developer** | Secure JWT & OAuth, Persistent Resume Storage, Real-Time AI Suggestion UI, Source Grounding Interface, Session Management. |
+| **Heni Patel** | **System Architect & Editor Specialist**| Puppeteer-based PDF Export, Dynamic Experience Editor Modules, Frontend State Management. |
+| **Gagan** | **Database & Analysis Expert** | MongoDB Atlas Vector Indexing, Schema Design, ATS Scoring Logic, Cloud Storage Management. |
 
 ---
+
+## 🧠 System Architecture Overview
+
+AI-Resume-Architect follows a **multi-layered RAG architecture**:
+
+
+
+1. **Document Ingestion**
+   - User profile & career history input via Glassmorphism Editor.
+   - Real-time text extraction and professional category chunking.
+
+2. **Vectorization**
+   - Professional summaries and skills converted to embeddings via **Google Gemini Embedding Models**.
+   - Stored in **MongoDB Atlas Vector Index** for semantic comparison.
+
+3. **Retrieval & Analysis**
+   - MongoDB Aggregation Pipeline retrieves industry-standard benchmarks based on cosine similarity.
+   - Semantic similarity calculated between user data and "Gold Standard" resume chunks.
+
+4. **Generation & Export**
+   - ATS-optimized bullet points generated via **Google Gemini Pro**.
+   - Pixel-perfect PDF rendering via **Puppeteer Service**.
+
+---
+
+## 📈 Development Roadmap (The 4 Phases)
+
+### ✅ Phase 1: Dual-Source Foundation & Styling
+- **Architecture:** Established independent `frontend/` and `backend/` directories.
+- **UI Engine:** Integrated **Tailwind CSS v4** with a custom Neon-Glassmorphism design system.
+- **Tech Setup:** Configured `tsx` for backend execution and Vite for frontend bundling.
+
+### ✅ Phase 2: Core Editor & State Management
+- **Components:** Built the `Editor.tsx` and `ExperienceEditor.tsx` for structured data entry.
+- **State:** Implemented **Zustand** store with local persistence to handle complex resume objects.
+- **Preview:** Created a real-time A4 CSS-grid renderer for live feedback.
+
+### ✅ Phase 3: Gemini AI Integration & RAG Pipeline
+- **Embeddings:** Connected **Gemini AI API** to vectorize user skills and summaries.
+- **Inference:** Integrated **Gemini Pro** for context-aware AI suggestions and ATS critiques.
+- **Vector Search:** Developed the **MongoDB Atlas** aggregation pipeline for semantic retrieval.
+- **Mock Payment:** Built the "Pro Unlock" flow to simulate premium feature access.
+
+### 🚧 Phase 4: Persistence & Production Scaling
+- **Authentication:** Implementing **JWT & Google OAuth** for secure user sessions.
+- **Cloud Storage:** Moving local state to MongoDB for multi-device resume access.
+- **PDF Engine:** Finalizing **Puppeteer** server-side rendering for high-resolution exports.
+
+---
+
 ## 🛠️ Tech Stack
-
-| Layer      | Technologies |
-|------------|--------------|
-| **Frontend** | React 18, Vite, Tailwind CSS v4, TypeScript |
-| **Backend**  | Node.js, Express, TypeScript, `tsx` |
-| **Tools**    | Postman, VS Code, Git |
+* **Backend:** Node.js, Express.js (TypeScript)
+* **Frontend:** React 18, Vite, Tailwind CSS v4
+* **AI Engine:** Google Gemini AI (1.5 Flash/Pro)
+* **Database:** MongoDB Atlas (Vector Search Enabled)
+* **PDF Engine:** Puppeteer (Headless Browser)
 
 ---
-## 🚀 How to Run
 
-### 🖥️ Frontend Setup
+## 🧪 Challenges & Solutions (Leadership Insights)
 
-```bash
-cd frontend
-npm install
-npm run dev
-# 🚀 AI-Resume-Architect
+- **Unified AI Implementation:** Using a single provider (**Gemini**) reduced API complexity and token overhead. We successfully utilized Gemini's large context window to pass more retrieved benchmarks from MongoDB, leading to more accurate resume tailoring.
+  
+- **State Management & Synchronization:**
+  Handling complex resume state across multiple tabs was solved by implementing a **Zustand store with persistence middleware**, ensuring no data loss during refresh.
 
-**An AI-powered professional resume builder with real-time preview and ATS optimization.**
+- **PDF Consistency:** Browser-based printing often broke Tailwind CSS v4 layouts. We moved PDF generation to the **Backend (Puppeteer)** to ensure every user receives an identical, high-quality document.
 
-### ⚙️ Backend Setup
-
-To run the backend server:
-
-cd backend
-npm install
-npm run dev
 ---
-```
 
-## Summary
-* **Dual-Architecture Setup**: The project is divided into two dedicated `src` directories (Backend and Frontend) for clean code separation and better scalability [cite: 2025-12-29].
-* **Modern UI Engine**: Built a premium Glassmorphism-based interface and dashboard using **Tailwind CSS v4** and React [cite: 2025-12-29].
-* **Core Components**: Successfully implemented the `editor.tsx` for real-time data entry and the `experienceEditor.tsx` for structured career history [cite: 2025-12-29].
-* **Technical Stability**: Fixed TypeScript global configurations and Vite-Tailwind v4 integration bugs to ensure a stable development environment [cite: 2025-12-29].
-* **Full-Stack Readiness**: The Node.js/Express server is fully operational with `tsx` integration, ready to handle API requests from frontend components [cite: 2025-12-29].
-
-## Challenges & Solutions (Leadership Insights)
-* **Architectural Management**: Coordinating between two separate `src` directories required a modular structure with independent configurations to prevent path conflicts.
-* **Styling Integration**: Overcame Tailwind CSS v4 sync issues by manually configuring the Vite plugin and overriding VS Code CSS linting for a stable design system.
-* **Type Resolution**: Resolved TypeScript global `node` type conflicts by optimizing `tsconfig.node.json` and explicit type installation.
-* **Development Efficiency**: Integrated `tsx` to allow direct TypeScript execution in the backend, significantly reducing the reload time during development.
-
-## ⚠️ Current Limitations (Phase 1 & 2)
-
-* **Local Environment Only**: The dual-source architecture (Backend & Frontend) is currently optimized for local development and lacks a production-ready Docker configuration [cite: 2025-12-29].
-* **Static PDF Export**: The resume generation is currently limited to client-side rendering; server-side PDF generation via Puppeteer is still in the integration phase.
-* **Manual Data Persistence**: Since the database integration is pending, user data is currently handled via local state and is lost upon page refresh.
-* **Limited AI Suggestions**: The AI optimization engine is currently in the testing phase and does not yet support multi-language resume analysis.
-* **Single Template Support**: The UI is currently locked to one professional Glassmorphism template; multi-template selection is part of the future roadmap.
----
----
-## 🗺️ Roadmap
-
-- [x] **Phase 1**: Dual-source architecture setup & Tailwind v4 integration.
-- [x] **Phase 2**: Core Editor components & Zustand state management.
-- [ ] **Phase 3**: Gemini AI integration for ATS optimization & Puppeteer PDF export.
-- [ ] **Phase 4**: Database persistence & User authentication.
 ## 🏁 Conclusion
 
-The successful completion of Phase 1 and 2 has established a robust foundation for the **AI-Resume-Architect**. By implementing a decoupled dual-source architecture [cite: 2025-12-29] and integrating modern styling with Tailwind CSS v4, we have ensured that the application is both scalable and high-performing. 
-
-As a team, we have overcome significant technical hurdles—ranging from TypeScript configuration conflicts to Vite-plugin synchronization—demonstrating strong technical leadership and collaborative problem-solving. This initial phase sets the stage for the upcoming integration of AI-driven content optimization and automated PDF generation, bringing us one step closer to delivering a professional, ATS-ready resume building experience.
----
-
+The **AI-Resume-Architect** project successfully demonstrates the integration of **Generative AI** and **Vector Databases**. Our team built a robust, scalable pipeline that provides users with a distinct advantage in a competitive, ATS-driven job market.
