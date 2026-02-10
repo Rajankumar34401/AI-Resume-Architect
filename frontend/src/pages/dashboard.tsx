@@ -38,6 +38,7 @@ const Dashboard = () => {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [upgrading, setUpgrading] = useState(false);
+  const [showMockCheckout, setShowMockCheckout] = useState(false);
   const navigate = useNavigate();
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -79,22 +80,41 @@ const Dashboard = () => {
   };
 
   const handleUpgrade = async () => {
-    try {
-      setUpgrading(true);
-      const res = await paymentService.upgradeToPro();
-      if (res.data.success) {
-        const updatedUser = { ...user, plan: 'pro' };
-        localStorage.setItem('user', JSON.stringify(updatedUser));
-        toast.success("Pro Plan Activated! 🚀", { duration: 4000 });
-        setTimeout(() => window.location.reload(), 1000);
-      }
-    } catch (err) {
-      toast.error("Upgrade failed.");
-    } finally {
-      setUpgrading(false);
-    }
-  };
+  try {
+    setUpgrading(true);
+    
+    // 1. Mock the "Redirecting to Bank" phase
+    const paymentToast = toast.loading("Connecting to secure payment gateway...", {
+      style: { background: '#0f172a', color: '#fff', border: '1px solid #1e293b' }
+    });
 
+    // 2. Fake a delay for processing (2 seconds)
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    toast.loading("Verifying transaction...", { id: paymentToast });
+    
+    // 3. Call your backend to actually update the plan
+    const res = await paymentService.upgradeToPro();
+    
+    if (res.data.success) {
+      // 4. Update local state so the UI changes immediately
+      const updatedUser = { ...user, plan: 'pro' as const };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      
+      toast.success("Payment Successful! Welcome to Pro. 🎉", { 
+        id: paymentToast,
+        duration: 5000 
+      });
+
+      // 5. Short delay before reload to let them see the success message
+      setTimeout(() => window.location.reload(), 1500);
+    }
+  } catch (err) {
+    toast.error("Payment declined by provider. Please try again.", { id: 'paymentToast' });
+  } finally {
+    setUpgrading(false);
+  }
+};
   const handleLogout = () => {
     localStorage.clear();
     navigate('/auth');
@@ -135,6 +155,29 @@ const Dashboard = () => {
       error: 'Download failed',
     });
   };
+
+const handleCreateNew = () => {
+  // 1. Check if user is Free and has already created 1 resume
+  if (user?.plan === 'free' && resumes.length >= 1) {
+    toast.error("Limit Reached! Upgrade to Pro for unlimited resumes.", {
+      icon: '🚫',
+      duration: 4000,
+      style: {
+        borderRadius: '15px',
+        background: '#0f172a',
+        color: '#fff',
+        border: '1px solid #334155'
+      }
+    });
+    
+    // Automatically scroll them up to the Upgrade Banner so they can click it
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
+  }
+
+  // 2. If they are Pro or haven't reached the limit, let them through
+  navigate('/builder');
+};
 
   return (
     <div className="min-h-screen bg-[#020617] text-white font-sans">
@@ -184,7 +227,7 @@ const Dashboard = () => {
                 <p className="text-slate-400 text-sm">Unlock AI tools, ATS optimization, and premium templates.</p>
               </div>
             </div>
-            <button onClick={handleUpgrade} disabled={upgrading} className="w-full md:w-auto bg-white text-black px-8 py-4 rounded-2xl font-black hover:bg-emerald-400 transition-all flex items-center justify-center gap-2">
+            <button onClick={() => setShowMockCheckout(true)} disabled={upgrading} className="w-full md:w-auto bg-white text-black px-8 py-4 rounded-2xl font-black hover:bg-emerald-400 transition-all flex items-center justify-center gap-2">
               {upgrading ? <Loader2 className="animate-spin" /> : "ACTIVATE PRO NOW"}
             </button>
           </div>
@@ -202,8 +245,18 @@ const Dashboard = () => {
           </div>
 
           {/* New Resume Button */}
-          <button onClick={() => navigate('/builder')} className="w-full md:w-auto bg-emerald-500 hover:bg-emerald-400 p-5 px-8 rounded-2xl font-black text-black flex items-center justify-center gap-2 transition-all active:scale-95 shadow-xl shadow-emerald-500/20">
-            <Plus size={20} strokeWidth={3} /> NEW RESUME
+          {/* Updated New Resume Button */}
+            <button onClick={handleCreateNew}
+            className={`w-full md:w-auto p-5 px-8 rounded-2xl font-black flex items-center gap-2 transition-all active:scale-95 shadow-xl 
+              ${(user?.plan === 'free' && resumes.length >= 1) 
+                ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700 shadow-none' 
+                : 'bg-emerald-500 text-black hover:bg-emerald-400 shadow-emerald-500/20'}`}>
+            {user?.plan === 'free' && resumes.length >= 1 ? (
+              <Zap size={20} className="fill-yellow-500 text-yellow-500" />
+            ) : (
+              <Plus size={20} strokeWidth={3} />
+            )}
+            {user?.plan === 'free' && resumes.length >= 1 ? "UPGRADE TO CREATE" : "NEW RESUME"}
           </button>
         </div>
 
@@ -277,6 +330,45 @@ const Dashboard = () => {
             )}
           </div>
         )}
+
+        {showMockCheckout && (
+  <div className="fixed inset-0 z-110 flex items-center justify-center p-6 bg-black/90 backdrop-blur-md">
+    <div className="bg-slate-900 border border-slate-800 p-8 rounded-[2.5rem] max-w-md w-full shadow-2xl">
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-xl font-black uppercase tracking-tighter">Mock <span className="text-emerald-500">Checkout</span></h3>
+        <Zap className="text-yellow-500 fill-yellow-500" size={20} />
+      </div>
+      
+      <div className="space-y-4 mb-8">
+        <div className="p-4 bg-slate-800/50 rounded-2xl border border-slate-700">
+          <p className="text-[10px] font-black text-slate-500 uppercase mb-1">Plan</p>
+          <p className="font-bold">CareerForge Pro - Monthly</p>
+        </div>
+        <div className="p-4 bg-slate-800/50 rounded-2xl border border-slate-700">
+          <p className="text-[10px] font-black text-slate-500 uppercase mb-1">Total Due</p>
+          <p className="text-2xl font-black text-emerald-400">$0.00 <span className="text-xs text-slate-500 font-normal line-through">$19.99</span></p>
+        </div>
+      </div>
+
+      <button 
+        onClick={() => {
+          setShowMockCheckout(false);
+          handleUpgrade();
+        }}
+        className="w-full bg-emerald-500 hover:bg-emerald-400 py-4 rounded-2xl font-black text-black transition-all active:scale-95 shadow-lg shadow-emerald-500/20"
+      >
+        COMPLETE MOCK PAYMENT
+      </button>
+      
+      <button 
+        onClick={() => setShowMockCheckout(false)}
+        className="w-full mt-3 text-slate-500 font-bold text-xs hover:text-white transition-colors"
+      >
+        CANCEL
+      </button>
+    </div>
+  </div>
+)}
       </main>
     </div>
   );
