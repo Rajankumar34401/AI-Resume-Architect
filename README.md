@@ -1,36 +1,21 @@
-I have compiled everything into a single, comprehensive `README.md`. This is structured as a "Master Canvas" that includes your architecture, RAG logic, all four development phases, and the consolidated environment setup.
+# 🚀 AI-Resume-Architect
+**Intelligent Document Intelligence & Career Engineering Platform**
 
-You can copy the block below and paste it directly into your VS Code editor.
-
-```markdown
-# 🚀 AI-Resume-Architect – Intelligent Career Intelligence System (RAG Based)
-
-**AI-Resume-Architect** is a context-aware resume engineering platform that transforms static professional data into ATS-optimized documents through semantic analysis and AI-driven insights.  
-The system is built using a **Retrieval-Augmented Generation (RAG)** architecture powered exclusively by **Google Gemini AI** for both vector embeddings and high-fidelity content generation, with **MongoDB Atlas Vector Search** as the data backbone.
+AI-Resume-Architect is a full-stack, context-aware resume engineering platform. It leverages **Retrieval-Augmented Generation (RAG)** to transform static professional data into ATS-optimized documents. By utilizing **Google Gemini AI** for both semantic embeddings and high-fidelity generation, the system ensures that every resume is grounded in industry-standard professional benchmarks.
 
 ---
 
-## 🧠 System Architecture Overview
+## 🧠 System Architecture & RAG Pipeline
 
-AI-Resume-Architect follows a **multi-layered RAG architecture**:
+The platform operates on a multi-layered RAG architecture to ensure data accuracy and prevent AI hallucinations.
 
 
 
-1. **Document Ingestion**
-   - User profile & career history input via Glassmorphism Editor.
-   - Real-time text extraction and professional category chunking.
-
-2. **Vectorization**
-   - Professional summaries and skills converted to embeddings via **Google Gemini Embedding Models**.
-   - Stored in **MongoDB Atlas Vector Index** for semantic comparison.
-
-3. **Retrieval & Analysis**
-   - MongoDB Aggregation Pipeline retrieves industry-standard benchmarks based on cosine similarity.
-   - Semantic similarity calculated between user data and "Gold Standard" resume chunks.
-
-4. **Generation & Export**
-   - ATS-optimized bullet points generated via **Google Gemini Pro**.
-   - Pixel-perfect PDF rendering via **Puppeteer Service**.
+1.  **Ingestion & Chunking**: User career history is captured via a dynamic editor and partitioned into logical professional modules (Experience, Education, Skills).
+2.  **Vectorization**: Content is converted into high-dimensional vectors using **Google Gemini Embedding Models**.
+3.  **Vector Storage**: Embeddings are stored in **MongoDB Atlas Vector Search**, enabling semantic similarity lookups rather than simple keyword matching.
+4.  **Contextual Retrieval**: During analysis, the system retrieves the most relevant industry benchmarks (Top-K similarity) from the vector store.
+5.  **Grounded Generation**: **Gemini Pro** processes the user's data alongside retrieved benchmarks to generate quantified, high-impact bullet points and an **ATS Score**.
 
 ---
 
@@ -38,20 +23,18 @@ AI-Resume-Architect follows a **multi-layered RAG architecture**:
 
 ```text
 AI-RESUME-ARCHITECT/
-├── frontend/                 # React.js (Vite) + Tailwind CSS v4
-│   ├── .env                  # Frontend Environment Variables
+├── frontend/                 # React 18 + Vite (Tailwind CSS v4)
+│   ├── .env                  # API Base URL & OAuth Config
 │   ├── src/
-│   │   ├── components/       # Editor, Preview, ATS Dashboard
-│   │   ├── store/            # Zustand state management
-│   │   └── pages/            # Dashboard, Builder, Auth
-├── backend/                  # Node.js + Express AI Server
-│   ├── .env                  # Backend Environment Variables
+│   │   ├── components/       # Neon-Glassmorphism UI Library
+│   │   ├── store/            # Zustand State Management (Persistence)
+│   │   └── pages/            # Dashboard, Resume Builder, Auth
+├── backend/                  # Node.js + Express (TypeScript)
+│   ├── .env                  # AI Keys, Database URI, JWT Secret
 │   ├── src/
-│   │   ├── controllers/      # Auth, AI, & Resume logic
-│   │   ├── models/           # MongoDB schemas
-│   │   └── utils/            # RAG, Puppeteer, Vector search
-
-```
+│   │   ├── controllers/      # RAG Logic, Auth, & Resume CRUD
+│   │   ├── services/         # Puppeteer PDF & Gemini API Wrappers
+│   │   └── utils/            # MongoDB Vector Aggregation Pipelines
 
 ---
 
